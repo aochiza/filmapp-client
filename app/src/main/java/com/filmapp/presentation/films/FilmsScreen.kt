@@ -12,11 +12,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,15 +42,23 @@ import com.filmapp.presentation.components.FilmAppEmptyState
 import com.filmapp.presentation.components.FilmCardSkeleton
 import com.filmapp.presentation.components.pressableScale
 import com.filmapp.presentation.theme.Spacing
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import com.filmapp.presentation.theme.TextFieldShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilmsScreen(
     onFilmClick: (Int) -> Unit,
+    onAddFilmClick: () -> Unit,
     viewModel: FilmsViewModel = hiltViewModel()
 ) {
     val filmsState by viewModel.filmsState.collectAsState()
+    val isAdmin by viewModel.isAdmin.collectAsState()
     val genres by viewModel.genres.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedGenreId by viewModel.selectedGenreId.collectAsState()
@@ -109,6 +119,19 @@ fun FilmsScreen(
                 }
             )
         },
+        floatingActionButton = {
+            if (isAdmin) {
+                FloatingActionButton(
+                    onClick = onAddFilmClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Добавить фильм"
+                    )
+                }
+            }
+        },
+
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
@@ -212,16 +235,90 @@ fun FilmsScreen(
                                 enter = fadeIn(),
                                 exit = fadeOut()
                             ) {
-                                FilmCard(
-                                    film = film,
-                                    onClick = { onFilmClick(film.id) },
-                                    onFavoriteClick = { viewModel.toggleFavorite(film) },
-                                    onWatchLaterClick = { viewModel.toggleWatchLater(film) },
-                                    modifier = Modifier.padding(
-                                        horizontal = Spacing.screenHorizontal,
-                                        vertical = Spacing.cardVertical
+                                val dismissState =
+                                    rememberSwipeToDismissBoxState(
+                                        confirmValueChange = { value ->
+
+                                            if (
+                                                value ==
+                                                SwipeToDismissBoxValue.EndToStart
+                                            ) {
+                                                viewModel.deleteFilm(film.id)
+                                                true
+                                            } else {
+                                                false
+                                            }
+                                        }
                                     )
-                                )
+
+                                if (isAdmin) {
+
+                                    SwipeToDismissBox(
+                                        state = dismissState,
+                                        enableDismissFromStartToEnd = false,
+
+                                        backgroundContent = {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(
+                                                        horizontal = Spacing.screenHorizontal,
+                                                        vertical = Spacing.cardVertical
+                                                    ),
+                                                contentAlignment =
+                                                    Alignment.CenterEnd
+                                            ) {
+                                                Icon(
+                                                    imageVector =
+                                                        Icons.Default.Delete,
+                                                    contentDescription =
+                                                        "Удалить"
+                                                )
+                                            }
+                                        }
+                                    ) {
+
+                                        FilmCard(
+                                            film = film,
+                                            onClick = {
+                                                onFilmClick(film.id)
+                                            },
+                                            onFavoriteClick = {
+                                                viewModel.toggleFavorite(film)
+                                            },
+                                            onWatchLaterClick = {
+                                                viewModel.toggleWatchLater(film)
+                                            },
+                                            modifier = Modifier.padding(
+                                                horizontal =
+                                                    Spacing.screenHorizontal,
+                                                vertical =
+                                                    Spacing.cardVertical
+                                            )
+                                        )
+                                    }
+
+                                } else {
+
+                                    FilmCard(
+                                        film = film,
+                                        onClick = {
+                                            onFilmClick(film.id)
+                                        },
+                                        onFavoriteClick = {
+                                            viewModel.toggleFavorite(film)
+                                        },
+                                        onWatchLaterClick = {
+                                            viewModel.toggleWatchLater(film)
+                                        },
+                                        modifier = Modifier.padding(
+                                            horizontal =
+                                                Spacing.screenHorizontal,
+                                            vertical =
+                                                Spacing.cardVertical
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

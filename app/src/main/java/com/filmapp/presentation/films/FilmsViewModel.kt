@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.filmapp.domain.model.Film
 import com.filmapp.domain.model.Genre
+import com.filmapp.domain.repository.AuthRepository
 import com.filmapp.domain.usecase.film.AddToFavoritesUseCase
 import com.filmapp.domain.usecase.film.AddToWatchLaterUseCase
 import com.filmapp.domain.usecase.film.GetFilmsUseCase
 import com.filmapp.domain.usecase.film.RemoveFromWatchLaterUseCase
 import com.filmapp.domain.usecase.genre.GetGenresUseCase
+import com.filmapp.domain.usecase.film.DeleteFilmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,8 +33,10 @@ class FilmsViewModel @Inject constructor(
     private val addToFavoritesUseCase: AddToFavoritesUseCase,
     private val addToWatchLaterUseCase: AddToWatchLaterUseCase,
     private val removeFromWatchLaterUseCase: RemoveFromWatchLaterUseCase,
-    private val getGenresUseCase: GetGenresUseCase
-) : ViewModel() {
+    private val getGenresUseCase: GetGenresUseCase,
+    private val authRepository: AuthRepository,
+    private val deleteFilmUseCase: DeleteFilmUseCase,
+) : ViewModel(){
 
     private val _filmsState = MutableStateFlow<FilmsState>(FilmsState.Loading)
     val filmsState: StateFlow<FilmsState> = _filmsState
@@ -48,12 +52,19 @@ class FilmsViewModel @Inject constructor(
 
     private val _advancedFilters = MutableStateFlow(FilmsAdvancedFilters())
     val advancedFilters: StateFlow<FilmsAdvancedFilters> = _advancedFilters
-
+    private val _isAdmin = MutableStateFlow(false)
+    val isAdmin: StateFlow<Boolean> = _isAdmin
     private var currentPage = 1
     private var isLastPage = false
     private val allFilms = mutableListOf<Film>()
 
     init {
+        viewModelScope.launch {
+            authRepository.getCurrentRole().collect { role ->
+                _isAdmin.value = role == "ADMIN"
+            }
+        }
+
         viewModelScope.launch {
             _searchQuery
                 .debounce(400)
@@ -63,6 +74,7 @@ class FilmsViewModel @Inject constructor(
                     loadFilms()
                 }
         }
+
         loadGenres()
         loadFilms()
     }
@@ -167,5 +179,29 @@ class FilmsViewModel @Inject constructor(
     private fun publishFilteredList() {
         val filtered = allFilms.applyAdvancedFilters(_advancedFilters.value)
         _filmsState.value = FilmsState.Success(filtered)
+    }
+
+    fun deleteFilm(filmId: Int) {
+        viewModelScope.launch {
+
+            deleteFilmUseCase(filmId)
+                .onSuccess {
+
+                    val updated = allFilms.filter {
+                        it.id != filmId
+                    }
+
+                    allFilms.clear()
+                    allFilms.addAll(updated)
+
+                    publishFilteredList()
+                }
+                .onFailure {
+                    _filmsState.value =
+                        FilmsState.Error(
+                            it.message ?: "Ошибка удаления фильма"
+                        )
+                }
+        }
     }
 }

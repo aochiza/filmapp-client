@@ -3,6 +3,7 @@ package com.filmapp.data.repository
 import com.filmapp.data.local.dao.FilmDao
 import com.filmapp.data.local.entity.FilmEntity
 import com.filmapp.data.remote.api.FilmApi
+import com.filmapp.data.remote.dto.FilmRequest
 import com.filmapp.domain.model.Film
 import com.filmapp.domain.repository.FilmRepository
 import javax.inject.Inject
@@ -25,6 +26,15 @@ class FilmRepositoryImpl @Inject constructor(
         }
         films
     }
+
+    override suspend fun createFilm(filmRequest: FilmRequest): Result<Film> = runCatching {
+        filmApi.createFilm(filmRequest).toDomain()
+    }
+
+    override suspend fun deleteFilm(id: Int): Result<Unit> =
+        runCatching {
+            filmApi.deleteFilm(id)
+        }
 
     override suspend fun getFilmById(id: Int): Result<Film> = runCatching {
         filmApi.getFilmById(id).toDomain()
@@ -122,4 +132,5 @@ class FilmRepositoryImpl @Inject constructor(
         isFavorite = isFavorite,
         isWatchLater = isWatchLater
     )
+
 }

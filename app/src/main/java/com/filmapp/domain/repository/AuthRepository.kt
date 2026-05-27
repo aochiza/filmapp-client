@@ -9,4 +9,5 @@ interface AuthRepository {
     suspend fun logout()
     fun isLoggedIn(): Flow<Boolean>
     fun getCurrentName(): Flow<String?>
+    fun getCurrentRole(): Flow<String?>
 }

@@ -17,5 +17,6 @@ data class AuthResponse(
     @SerializedName("token") val token: String,
     @SerializedName("userId") val userId: Int,
     @SerializedName("name") val name: String,
-    @SerializedName("email") val email: String
+    @SerializedName("email") val email: String,
+    @SerializedName("role") val role: String
 )

@@ -1,5 +1,6 @@
 package com.filmapp.domain.repository
 
+import com.filmapp.data.remote.dto.FilmRequest
 import com.filmapp.domain.model.Film
 
 interface FilmRepository {
@@ -23,4 +24,7 @@ interface FilmRepository {
     suspend fun cacheFilms(films: List<Film>)
 
     suspend fun getRandomFilm(genreId: Int? = null): Film?
+
+    suspend fun createFilm(filmRequest: FilmRequest): Result<Film>
+    suspend fun deleteFilm(id: Int): Result<Unit>
 }

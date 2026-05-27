@@ -21,24 +21,52 @@ class AuthRepositoryImpl @Inject constructor(
         password: String,
         name: String
     ): Result<User> = runCatching {
+
         firebaseAuthSource.register(email, password)
 
-        val response = authApi.register(RegisterRequest(email, password, name))
+        val response =
+            authApi.register(RegisterRequest(email, password, name))
 
-        // cохраняем JWT токен от нашего сервера
-        tokenProvider.saveAuthData(response.token, response.userId, response.name)
+        tokenProvider.saveAuthData(
+            token = response.token,
+            userId = response.userId,
+            name = response.name,
+            role = response.role
+        )
 
-        User(response.userId, response.name, response.email, response.token)
+        User(
+            userId = response.userId,
+            name = response.name,
+            email = response.email,
+            token = response.token,
+            role = response.role
+        )
     }
 
-    override suspend fun login(email: String, password: String): Result<User> = runCatching {
+    override suspend fun login(
+        email: String,
+        password: String
+    ): Result<User> = runCatching {
+
         firebaseAuthSource.login(email, password)
 
-        val response = authApi.login(LoginRequest(email, password))
+        val response =
+            authApi.login(LoginRequest(email, password))
 
-        tokenProvider.saveAuthData(response.token, response.userId, response.name)
+        tokenProvider.saveAuthData(
+            token = response.token,
+            userId = response.userId,
+            name = response.name,
+            role = response.role
+        )
 
-        User(response.userId, response.name, response.email, response.token)
+        User(
+            userId = response.userId,
+            name = response.name,
+            email = response.email,
+            token = response.token,
+            role = response.role
+        )
     }
 
     override suspend fun logout() {
@@ -46,7 +74,12 @@ class AuthRepositoryImpl @Inject constructor(
         tokenProvider.clearAuthData()
     }
 
-    override fun isLoggedIn(): Flow<Boolean> = tokenProvider.isLoggedIn()
+    override fun isLoggedIn(): Flow<Boolean> =
+        tokenProvider.isLoggedIn()
 
-    override fun getCurrentName(): Flow<String?> = tokenProvider.getName()
+    override fun getCurrentName(): Flow<String?> =
+        tokenProvider.getName()
+
+    override fun getCurrentRole(): Flow<String?> =
+        tokenProvider.getRole()
 }

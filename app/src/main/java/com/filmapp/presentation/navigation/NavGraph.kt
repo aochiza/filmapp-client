@@ -32,6 +32,7 @@ import com.filmapp.presentation.detail.FilmDetailScreen
 import com.filmapp.presentation.favorites.FavoritesScreen
 import com.filmapp.presentation.films.FilmsScreen
 import com.filmapp.presentation.profile.ProfileScreen
+import com.filmapp.presentation.films.AddEditFilmScreen
 import com.filmapp.presentation.random.RandomScreen
 import com.filmapp.presentation.search.SearchScreen
 import com.filmapp.presentation.theme.Elevation
@@ -163,7 +164,12 @@ fun NavGraph(
             composable(Screen.Films.route) {
                 FilmsScreen(
                     onFilmClick = { filmId ->
-                        navController.navigate(Screen.FilmDetail.createRoute(filmId))
+                        navController.navigate(
+                            Screen.FilmDetail.createRoute(filmId)
+                        )
+                    },
+                    onAddFilmClick = {
+                        navController.navigate(Screen.AddFilm.route)
                     }
                 )
             }
@@ -198,6 +204,14 @@ fun NavGraph(
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
+                    }
+                )
+            }
+
+            composable(Screen.AddFilm.route) {
+                AddEditFilmScreen(
+                    onBack = {
+                        navController.popBackStack()
                     }
                 )
             }
