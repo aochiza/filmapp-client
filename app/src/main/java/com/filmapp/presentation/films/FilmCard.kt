@@ -4,12 +4,14 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -45,6 +49,7 @@ import com.filmapp.presentation.theme.AccentGold
 import com.filmapp.presentation.theme.CardShape
 import com.filmapp.presentation.theme.PosterShape
 import com.filmapp.presentation.theme.Spacing
+import com.filmapp.presentation.utils.getFilmPosterRes
 
 @Composable
 fun FilmCard(
@@ -72,6 +77,8 @@ fun FilmCard(
         label = "favoriteTint"
     )
 
+    val context = LocalContext.current
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -97,8 +104,13 @@ fun FilmCard(
         ) {
 
             android.util.Log.d("POSTER_URL", film.posterUrl ?: "NULL")
-            AsyncImage(
-                model = film.posterUrl,
+            Image(
+                painter = painterResource(
+                    id = getFilmPosterRes(
+                        context = context,
+                        filmId = film.id
+                    )
+                ),
                 contentDescription = film.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

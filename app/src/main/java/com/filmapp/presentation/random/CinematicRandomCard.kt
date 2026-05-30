@@ -139,13 +139,9 @@ fun CinematicRandomCard(
                     .fillMaxHeight(0.88f)
                     .align(Alignment.TopCenter)
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(film.posterUrl)
-                        .crossfade(400)
-                        .build(),
-                    contentDescription = film.title,
-                    contentScale = ContentScale.Crop,
+                // ⭐⭐⭐ ОСНОВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ⭐⭐⭐
+                FilmPoster(
+                    film = film,
                     modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer { translationX = imageParallax }
@@ -296,4 +292,55 @@ fun CinematicRandomCard(
             }
         }
     }
+}
+
+// ⭐ НОВЫЙ КОМПОНЕНТ ДЛЯ ЗАГРУЗКИ ПОСТЕРОВ ⭐
+@Composable
+fun FilmPoster(
+    film: Film,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    // Создаем модель для загрузки с приоритетом: локальный > URL > заглушка
+    val imageModel = remember(film.id, film.posterUrl) {
+        // Пытаемся найти локальный постер по ID фильма
+        val localPosterName = "poster_${film.id}"
+        val drawableResId = context.resources.getIdentifier(
+            localPosterName,
+            "drawable",
+            context.packageName
+        )
+
+        when {
+            // Если нашли локальный постер
+            drawableResId != 0 -> {
+                ImageRequest.Builder(context)
+                    .data(drawableResId)
+                    .crossfade(400)
+                    .build()
+            }
+            // Если есть URL с сервера
+            !film.posterUrl.isNullOrEmpty() -> {
+                ImageRequest.Builder(context)
+                    .data(film.posterUrl)
+                    .crossfade(400)
+                    .error(android.R.drawable.ic_menu_gallery) // заглушка при ошибке URL
+                    .build()
+            }
+            // Если ничего нет - используем стандартную заглушку
+            else -> {
+                ImageRequest.Builder(context)
+                    .data(android.R.drawable.ic_menu_gallery)
+                    .build()
+            }
+        }
+    }
+
+    AsyncImage(
+        model = imageModel,
+        contentDescription = film.title,
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+    )
 }

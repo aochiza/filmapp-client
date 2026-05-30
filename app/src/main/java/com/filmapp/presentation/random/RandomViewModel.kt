@@ -33,7 +33,6 @@ class RandomViewModel @Inject constructor(
 
     init {
         loadGenres()
-        loadRandomFilm()
     }
 
     fun loadGenres() {
@@ -52,7 +51,7 @@ class RandomViewModel @Inject constructor(
         showLoading: Boolean = true
     ) {
         viewModelScope.launch {
-            if (showLoading || _randomState.value !is RandomState.Success) {
+            if (showLoading) {
                 _randomState.value = RandomState.Loading
             }
             try {

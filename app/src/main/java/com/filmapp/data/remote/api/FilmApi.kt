@@ -3,6 +3,7 @@ package com.filmapp.data.remote.api
 import com.filmapp.data.remote.dto.FilmRequest
 import com.filmapp.data.remote.dto.FilmResponse
 import com.filmapp.data.remote.dto.FilmsListResponse
+import okhttp3.ResponseBody
 import retrofit2.http.*
 
 interface FilmApi {
@@ -37,7 +38,7 @@ interface FilmApi {
     suspend fun removeFromFavorites(@Path("id") id: Int)
 
     @GET("watch-later")
-    suspend fun getWatchLater(): List<FilmResponse>
+    suspend fun getWatchLater(): ResponseBody
 
     @POST("watch-later/{filmId}")
     suspend fun addToWatchLater(@Path("filmId") filmId: Int)

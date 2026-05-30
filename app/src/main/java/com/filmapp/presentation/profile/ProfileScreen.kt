@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +56,11 @@ fun ProfileScreen(
     val watchLaterState by viewModel.watchLaterState.collectAsState()
     val name by viewModel.name.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    LifecycleResumeEffect {
+        viewModel.loadWatchLater()
+        onPauseOrDispose { }
+    }
 
     if (showLogoutDialog) {
         AlertDialog(
@@ -213,7 +219,10 @@ fun ProfileScreen(
                         FilmCard(
                             film = film,
                             onClick = {},
-                            onFavoriteClick = { viewModel.removeFromWatchLater(film.id) },
+                            onFavoriteClick = {},
+                            onWatchLaterClick = {
+                                viewModel.removeFromWatchLater(film.id)
+                            },
                             modifier = Modifier.padding(
                                 horizontal = Spacing.screenHorizontal,
                                 vertical = Spacing.cardVertical

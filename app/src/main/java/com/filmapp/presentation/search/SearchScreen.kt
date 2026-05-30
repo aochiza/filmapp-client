@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.filmapp.presentation.components.FilmAppEmptyState
 import com.filmapp.presentation.components.FilmAppTopBar
 import com.filmapp.presentation.components.FilmCardSkeleton
+import com.filmapp.presentation.components.SearchHistorySection
 import com.filmapp.presentation.components.pressableScale
 import com.filmapp.presentation.films.AllGenresChip
 import com.filmapp.presentation.films.FilmCard
@@ -69,6 +70,7 @@ fun SearchScreen(
     val selectedGenreId by viewModel.selectedGenreId.collectAsState()
     val minRating by viewModel.minRating.collectAsState()
     val selectedYear by viewModel.selectedYear.collectAsState()
+    val searchHistory by viewModel.searchHistory.collectAsState()
     val focusManager = LocalFocusManager.current
 
     var showFilters by remember { mutableStateOf(false) }
@@ -156,6 +158,15 @@ fun SearchScreen(
                         unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
                     )
                 )
+            }
+
+            if (searchQuery.isBlank()) {
+                item {
+                    SearchHistorySection(
+                        queries = searchHistory,
+                        onQueryClick = viewModel::onHistoryQuerySelected
+                    )
+                }
             }
 
             item {

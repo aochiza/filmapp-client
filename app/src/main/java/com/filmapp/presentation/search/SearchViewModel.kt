@@ -2,6 +2,7 @@ package com.filmapp.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.filmapp.data.local.SearchHistoryStore
 import com.filmapp.domain.model.Film
 import com.filmapp.domain.model.Genre
 import com.filmapp.domain.usecase.film.AddToFavoritesUseCase
@@ -26,7 +27,8 @@ sealed class SearchState {
 class SearchViewModel @Inject constructor(
     private val getFilmsUseCase: GetFilmsUseCase,
     private val addToFavoritesUseCase: AddToFavoritesUseCase,
-    private val getGenresUseCase: GetGenresUseCase
+    private val getGenresUseCase: GetGenresUseCase,
+    private val searchHistoryStore: SearchHistoryStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<SearchState>(SearchState.Idle)
@@ -46,6 +48,9 @@ class SearchViewModel @Inject constructor(
 
     private val _selectedYear = MutableStateFlow<Int?>(null)
     val selectedYear: StateFlow<Int?> = _selectedYear
+
+    val searchHistory: StateFlow<List<String>> = searchHistoryStore.history
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
         loadGenres()
@@ -72,6 +77,10 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun onHistoryQuerySelected(query: String) {
         _searchQuery.value = query
     }
 
@@ -117,6 +126,11 @@ class SearchViewModel @Inject constructor(
             search = params.query.ifBlank { null },
             genreId = params.genreId
         ).onSuccess { films ->
+            val trimmedQuery = params.query.trim()
+            if (trimmedQuery.isNotBlank()) {
+                searchHistoryStore.addQuery(trimmedQuery)
+            }
+
             val filtered = films
                 .filter { params.rating == null || (it.rating ?: 0.0) >= params.rating }
                 .filter { params.year == null || it.releaseYear == params.year }

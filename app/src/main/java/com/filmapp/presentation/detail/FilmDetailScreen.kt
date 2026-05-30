@@ -44,13 +44,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.filmapp.presentation.components.FilmAppErrorState
 import com.filmapp.presentation.components.FilmAppLoading
 import com.filmapp.presentation.components.FilmAppTopBar
 import com.filmapp.presentation.components.pressableScale
 import com.filmapp.presentation.theme.AccentGold
 import com.filmapp.presentation.theme.Spacing
+import com.filmapp.presentation.utils.FilmPosterImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -176,11 +176,10 @@ fun FilmDetailScreen(
                                 .fillMaxWidth()
                                 .height(300.dp)
                         ) {
-                            AsyncImage(
-                                model = film.posterUrl,
-                                contentDescription = film.title,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
+                            FilmPosterImage(
+                                film = film,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
                             )
                             Box(
                                 modifier = Modifier

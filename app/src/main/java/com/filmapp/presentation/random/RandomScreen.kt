@@ -2,8 +2,6 @@ package com.filmapp.presentation.random
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.filmapp.presentation.components.FilmAppErrorState
 import com.filmapp.presentation.theme.Spacing
@@ -37,6 +36,11 @@ fun RandomScreen(
     val genres by viewModel.genres.collectAsStateWithLifecycle()
     val selectedGenreId by viewModel.selectedGenreId.collectAsStateWithLifecycle()
 
+    LifecycleResumeEffect {
+        viewModel.loadRandomFilm(genreId = selectedGenreId, showLoading = true)
+        onPauseOrDispose { }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,42 +49,16 @@ fun RandomScreen(
         AnimatedContent(
             targetState = randomState,
             modifier = Modifier.fillMaxSize(),
-            transitionSpec = {
-                when {
-                    initialState is RandomState.Loading && targetState is RandomState.Success ->
-                        fadeIn(tween(450)) togetherWith fadeOut(tween(200))
-
-                    targetState is RandomState.Loading ->
-                        fadeIn(tween(200)) togetherWith fadeOut(tween(200))
-
-                    else -> {
-                        val target = targetState
-                        val initial = initialState
-
-                        val direction =
-                            if (target is RandomState.Success &&
-                                initial is RandomState.Success
-                            ) {
-                                if (target.film.id > initial.film.id) 1 else -1
-                            } else {
-                                1
-                            }
-                        (slideInHorizontally(
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMediumLow
-                            ),
-                            initialOffsetX = { fullWidth -> direction * fullWidth / 3 }
-                        ) + fadeIn(tween(350))) togetherWith
-                            (slideOutHorizontally(
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioNoBouncy,
-                                    stiffness = Spring.StiffnessMedium
-                                ),
-                                targetOffsetX = { fullWidth -> -direction * fullWidth / 3 }
-                            ) + fadeOut(tween(280)))
-                    }
+            contentKey = { state ->
+                when (state) {
+                    is RandomState.Success -> state.film.id
+                    is RandomState.Loading -> "loading"
+                    is RandomState.Error -> "error"
                 }
+            },
+            transitionSpec = {
+                (fadeIn(tween(280)) + slideInHorizontally(tween(280)) { width -> width / 5 }) togetherWith
+                    (fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { width -> -width / 5 })
             },
             label = "randomStateContent"
         ) { state ->
@@ -121,7 +99,6 @@ fun RandomScreen(
             }
         }
 
-        // Category chips overlay
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,7 +107,7 @@ fun RandomScreen(
         ) {
             AnimatedVisibility(
                 visible = genres.isNotEmpty(),
-                enter = fadeIn(tween(400)),
+                enter = fadeIn(tween(300)),
                 exit = fadeOut(tween(200))
             ) {
                 RandomCategoryChips(

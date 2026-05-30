@@ -33,17 +33,16 @@ class ProfileViewModel @Inject constructor(
     val name: StateFlow<String?> = tokenProvider.getName()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-    init {
-        loadWatchLater()
-    }
-
     fun loadWatchLater() {
         viewModelScope.launch {
             _watchLaterState.value = WatchLaterState.Loading
             getWatchLaterUseCase()
                 .onSuccess { films ->
-                    _watchLaterState.value = if (films.isEmpty()) WatchLaterState.Empty
-                    else WatchLaterState.Success(films)
+                    _watchLaterState.value = if (films.isEmpty()) {
+                        WatchLaterState.Empty
+                    } else {
+                        WatchLaterState.Success(films)
+                    }
                 }
                 .onFailure {
                     _watchLaterState.value = WatchLaterState.Error(
@@ -56,11 +55,16 @@ class ProfileViewModel @Inject constructor(
     fun removeFromWatchLater(filmId: Int) {
         viewModelScope.launch {
             removeFromWatchLaterUseCase(filmId)
-            val current = (_watchLaterState.value as? WatchLaterState.Success)
-                ?.films ?: return@launch
-            val updated = current.filter { it.id != filmId }
-            _watchLaterState.value = if (updated.isEmpty()) WatchLaterState.Empty
-            else WatchLaterState.Success(updated)
+                .onSuccess {
+                    val current = (_watchLaterState.value as? WatchLaterState.Success)
+                        ?.films ?: return@launch
+                    val updated = current.filter { it.id != filmId }
+                    _watchLaterState.value = if (updated.isEmpty()) {
+                        WatchLaterState.Empty
+                    } else {
+                        WatchLaterState.Success(updated)
+                    }
+                }
         }
     }
 
