@@ -43,7 +43,6 @@ data class GenreResponse(
     @SerializedName("description") val description: String?
 )
 
-/** Backend may return watch-later entries with nested `film` objects. */
 data class WatchLaterEntryResponse(
     @SerializedName("film") val film: FilmResponse?,
     @SerializedName("filmId") val filmId: Int? = null

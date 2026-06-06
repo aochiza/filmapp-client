@@ -81,7 +81,6 @@ class FilmRepositoryImpl @Inject constructor(
                 .map { it.toDomain(markWatchLater = true) }
                 .also { films -> films.forEach { saveFilmLocally(it) } }
         } catch (_: Exception) {
-            // Server watch-later may fail (e.g. missing DB column added_at) — use local cache.
             filmDao.getWatchLaterFilms().map { it.toDomain() }
         }
     }
@@ -90,7 +89,6 @@ class FilmRepositoryImpl @Inject constructor(
         try {
             filmApi.addToWatchLater(filmId)
         } catch (_: Exception) {
-            // Persist locally when server endpoint is unavailable.
         }
         markWatchLaterLocally(filmId, isWatchLater = true)
     }
@@ -99,7 +97,6 @@ class FilmRepositoryImpl @Inject constructor(
         try {
             filmApi.removeFromWatchLater(filmId)
         } catch (_: Exception) {
-            // Persist locally when server endpoint is unavailable.
         }
         markWatchLaterLocally(filmId, isWatchLater = false)
     }
