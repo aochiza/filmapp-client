@@ -9,9 +9,10 @@ class AuthInterceptor @Inject constructor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = tokenProvider.getTokenSync()
+        val token = tokenProvider.getTokenSync()//берем токен
 
         val request = if (!token.isNullOrEmpty()) {
+            //добав заголовок
             chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()

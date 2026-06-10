@@ -3,6 +3,7 @@ package com.filmapp.presentation.random
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -96,20 +97,15 @@ fun CinematicRandomCard(
                                 }
                                 offsetX.animateTo(
                                     targetValue = target,
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioLowBouncy,
-                                        stiffness = Spring.StiffnessMediumLow
-                                    )
+                                    animationSpec = tween(durationMillis = 250)
                                 )
                                 onSwipeComplete()
                                 offsetX.snapTo(0f)
                             } else {
+                                //анимация возврата
                                 offsetX.animateTo(
                                     targetValue = 0f,
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                        stiffness = Spring.StiffnessMedium
-                                    )
+                                    animationSpec = tween(durationMillis = 200)
                                 )
                             }
                         }
@@ -139,7 +135,7 @@ fun CinematicRandomCard(
                     .fillMaxHeight(0.88f)
                     .align(Alignment.TopCenter)
             ) {
-                // ⭐⭐⭐ ОСНОВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ⭐⭐⭐
+
                 FilmPoster(
                     film = film,
                     modifier = Modifier
@@ -294,7 +290,6 @@ fun CinematicRandomCard(
     }
 }
 
-// ⭐ НОВЫЙ КОМПОНЕНТ ДЛЯ ЗАГРУЗКИ ПОСТЕРОВ ⭐
 @Composable
 fun FilmPoster(
     film: Film,
@@ -302,9 +297,8 @@ fun FilmPoster(
 ) {
     val context = LocalContext.current
 
-    // Создаем модель для загрузки с приоритетом: локальный > URL > заглушка
     val imageModel = remember(film.id, film.posterUrl) {
-        // Пытаемся найти локальный постер по ID фильма
+
         val localPosterName = "poster_${film.id}"
         val drawableResId = context.resources.getIdentifier(
             localPosterName,
@@ -313,22 +307,22 @@ fun FilmPoster(
         )
 
         when {
-            // Если нашли локальный постер
+            //локальный
             drawableResId != 0 -> {
                 ImageRequest.Builder(context)
                     .data(drawableResId)
                     .crossfade(400)
                     .build()
             }
-            // Если есть URL с сервера
+            //с сервера
             !film.posterUrl.isNullOrEmpty() -> {
                 ImageRequest.Builder(context)
                     .data(film.posterUrl)
                     .crossfade(400)
-                    .error(android.R.drawable.ic_menu_gallery) // заглушка при ошибке URL
+                    .error(android.R.drawable.ic_menu_gallery)
                     .build()
             }
-            // Если ничего нет - используем стандартную заглушку
+            //заглушка
             else -> {
                 ImageRequest.Builder(context)
                     .data(android.R.drawable.ic_menu_gallery)
