@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.filmapp.R
 import com.filmapp.presentation.components.FilmAppEmptyState
 import com.filmapp.presentation.components.FilmAppErrorState
 import com.filmapp.presentation.components.FilmAppLoading
@@ -31,7 +33,10 @@ fun FavoritesScreen(
 
     Scaffold(
         topBar = {
-            FilmAppTopBar(title = "Избранное", centered = true)
+            FilmAppTopBar(
+                title = stringResource(R.string.favorites_title),
+                centered = true
+            )
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -46,22 +51,22 @@ fun FavoritesScreen(
                 is FavoritesState.Loading -> {
                     FilmAppLoading(
                         modifier = Modifier.fillMaxSize(),
-                        message = "Загрузка избранного..."
+                        message = stringResource(R.string.favorites_loading)
                     )
                 }
 
                 is FavoritesState.Empty -> {
                     FilmAppEmptyState(
-                        emoji = "❤️",
-                        title = "Избранное пусто",
-                        subtitle = "Добавляйте фильмы, нажав на сердечко",
+                        emoji = stringResource(R.string.favorites_empty_emoji),
+                        title = stringResource(R.string.favorites_empty_title),
+                        subtitle = stringResource(R.string.favorites_empty_subtitle),
                         modifier = Modifier.fillMaxSize()
                     )
                 }
 
                 is FavoritesState.Error -> {
                     FilmAppErrorState(
-                        title = "Ошибка",
+                        title = stringResource(R.string.favorites_error_title),
                         message = s.message,
                         onRetry = { viewModel.loadFavorites() },
                         modifier = Modifier.fillMaxSize()

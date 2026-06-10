@@ -112,6 +112,7 @@ fun FilmAppErrorState(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
             textAlign = TextAlign.Center
         )
+            //повтор
         FilmAppButton(
             text = stringResource(com.filmapp.R.string.retry_button),
             onClick = onRetry,

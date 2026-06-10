@@ -55,8 +55,9 @@ class SearchViewModel @Inject constructor(
     init {
         loadGenres()
         viewModelScope.launch {
+            //чтобы следить за несколькими фильтрами сразу
             combine(
-                _searchQuery.debounce(400).distinctUntilChanged(),
+                _searchQuery.debounce(400).distinctUntilChanged(), //ждем 4 после измен
                 _selectedGenreId,
                 _minRating,
                 _selectedYear
@@ -126,14 +127,18 @@ class SearchViewModel @Inject constructor(
             search = params.query.ifBlank { null },
             genreId = params.genreId
         ).onSuccess { films ->
+            //в историю
             val trimmedQuery = params.query.trim()
             if (trimmedQuery.isNotBlank()) {
                 searchHistoryStore.addQuery(trimmedQuery)
             }
 
+            //фильтры
             val filtered = films
                 .filter { params.rating == null || (it.rating ?: 0.0) >= params.rating }
                 .filter { params.year == null || it.releaseYear == params.year }
+
+
             _state.value = if (filtered.isEmpty()) SearchState.Empty
             else SearchState.Success(filtered)
         }.onFailure {

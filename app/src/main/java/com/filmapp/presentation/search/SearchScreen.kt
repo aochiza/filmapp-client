@@ -45,8 +45,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.filmapp.R
 import com.filmapp.presentation.components.FilmAppEmptyState
 import com.filmapp.presentation.components.FilmAppTopBar
 import com.filmapp.presentation.components.FilmCardSkeleton
@@ -79,7 +81,7 @@ fun SearchScreen(
     Scaffold(
         topBar = {
             FilmAppTopBar(
-                title = "Поиск",
+                title = stringResource(R.string.search_title),
                 centered = true,
                 actions = {
                     IconButton(
@@ -95,7 +97,7 @@ fun SearchScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
-                                contentDescription = "Фильтры",
+                                contentDescription = stringResource(R.string.filter_button),
                                 tint = if (hasActiveFilters) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -115,13 +117,14 @@ fun SearchScreen(
                 .padding(paddingValues),
             contentPadding = PaddingValues(bottom = Spacing.md)
         ) {
+            //поиск
             item {
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.onSearchQueryChanged(it) },
                     placeholder = {
                         Text(
-                            "Название, режиссёр...",
+                            stringResource(R.string.search_placeholder),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
                         )
                     },
@@ -137,7 +140,7 @@ fun SearchScreen(
                             IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Очистить"
+                                    contentDescription = stringResource(R.string.clear_search)
                                 )
                             }
                         }
@@ -160,6 +163,7 @@ fun SearchScreen(
                 )
             }
 
+            //история поиска
             if (searchQuery.isBlank()) {
                 item {
                     SearchHistorySection(
@@ -169,6 +173,7 @@ fun SearchScreen(
                 }
             }
 
+            // фильтры
             item {
                 AnimatedVisibility(
                     visible = showFilters,
@@ -182,7 +187,10 @@ fun SearchScreen(
                             .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs),
                         verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
-                        Text(text = "Жанр", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = stringResource(R.string.filter_genre_label),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                         LazyRow {
                             item {
                                 AllGenresChip(
@@ -199,10 +207,12 @@ fun SearchScreen(
                             }
                         }
 
+                        //рейтинг
                         Text(
-                            text = "Минимальный рейтинг: ${
-                                minRating?.let { String.format("%.1f", it) } ?: "Любой"
-                            }",
+                            text = stringResource(
+                                R.string.filter_rating_label,
+                                minRating?.let { String.format("%.1f", it) } ?: stringResource(R.string.filter_rating_any)
+                            ),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Slider(
@@ -219,13 +229,14 @@ fun SearchScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
 
+                        // сброс
                         if (hasActiveFilters) {
                             TextButton(
                                 onClick = { viewModel.clearFilters() },
                                 modifier = Modifier.align(Alignment.End)
                             ) {
                                 Text(
-                                    text = "Сбросить фильтры",
+                                    text = stringResource(R.string.filter_clear_button),
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -248,9 +259,9 @@ fun SearchScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             FilmAppEmptyState(
-                                emoji = "🔍",
-                                title = "Введите запрос для поиска",
-                                subtitle = "Используйте фильтры для точного результата"
+                                emoji = stringResource(R.string.search_idle_emoji),
+                                title = stringResource(R.string.search_idle_title),
+                                subtitle = stringResource(R.string.search_idle_subtitle)
                             )
                         }
                     }
@@ -270,9 +281,9 @@ fun SearchScreen(
                 is SearchState.Empty -> {
                     item {
                         FilmAppEmptyState(
-                            emoji = "😕",
-                            title = "Ничего не найдено",
-                            subtitle = "Попробуйте другой запрос или сбросьте фильтры"
+                            emoji = stringResource(R.string.search_empty_emoji),
+                            title = stringResource(R.string.search_empty_title),
+                            subtitle = stringResource(R.string.search_empty_subtitle)
                         )
                     }
                 }
@@ -286,7 +297,7 @@ fun SearchScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = s.message,
+                                text = s.message ?: stringResource(R.string.search_error_default),
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodyMedium
                             )

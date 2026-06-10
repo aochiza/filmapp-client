@@ -40,10 +40,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.filmapp.R
 import com.filmapp.presentation.components.FilmAppErrorState
 import com.filmapp.presentation.components.FilmAppLoading
 import com.filmapp.presentation.components.FilmAppTopBar
@@ -101,7 +104,7 @@ fun FilmDetailScreen(
                                 } else {
                                     Icons.Default.BookmarkBorder
                                 },
-                                contentDescription = "Посмотреть позже",
+                                contentDescription = stringResource(R.string.cd_watch_later),
                                 tint = if (film.isWatchLater) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -120,7 +123,7 @@ fun FilmDetailScreen(
                                 } else {
                                     Icons.Default.FavoriteBorder
                                 },
-                                contentDescription = "Избранное",
+                                contentDescription = stringResource(R.string.cd_favorite),
                                 tint = if (film.isFavorite) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -147,7 +150,7 @@ fun FilmDetailScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        FilmAppLoading(message = "Загрузка фильма...")
+                        FilmAppLoading(message = stringResource(R.string.loading_film))
                     }
                 }
 
@@ -157,7 +160,7 @@ fun FilmDetailScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         FilmAppErrorState(
-                            title = "Ошибка загрузки",
+                            title = stringResource(R.string.error_loading_title),
                             message = s.message,
                             onRetry = { viewModel.loadFilm(filmId) }
                         )
@@ -187,7 +190,7 @@ fun FilmDetailScreen(
                                     .background(
                                         Brush.verticalGradient(
                                             colors = listOf(
-                                                androidx.compose.ui.graphics.Color.Transparent,
+                                                Color.Transparent,
                                                 MaterialTheme.colorScheme.background.copy(alpha = 0.3f),
                                                 MaterialTheme.colorScheme.background
                                             ),
@@ -247,7 +250,9 @@ fun FilmDetailScreen(
                                 }
                                 InfoChip(text = film.releaseYear.toString())
                                 film.genreName?.let { InfoChip(text = it) }
-                                film.duration?.let { InfoChip(text = "$it мин") }
+                                film.duration?.let {
+                                    InfoChip(text = stringResource(com.filmapp.R.string.minutes_format, it))
+                                }
                             }
 
                             HorizontalDivider(
@@ -255,13 +260,16 @@ fun FilmDetailScreen(
                             )
 
                             film.director?.let {
-                                DetailRow(label = "Режиссёр", value = it)
+                                DetailRow(
+                                    label = stringResource(R.string.director_label),
+                                    value = it
+                                )
                             }
 
                             film.description?.let { description ->
                                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Text(
-                                        text = "Описание",
+                                        text = stringResource(R.string.description_label),
                                         style = MaterialTheme.typography.titleMedium
                                     )
                                     Text(
@@ -299,7 +307,7 @@ private fun InfoChip(text: String) {
 private fun DetailRow(label: String, value: String) {
     Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         Text(
-            text = "$label:",
+            text = stringResource(com.filmapp.R.string.director_label_format, label),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )

@@ -2,6 +2,7 @@ package com.filmapp.presentation.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.filmapp.R
 import com.filmapp.domain.model.Film
 import com.filmapp.domain.usecase.film.AddToFavoritesUseCase
 import com.filmapp.domain.usecase.film.AddToWatchLaterUseCase
@@ -36,9 +37,16 @@ class FilmDetailViewModel @Inject constructor(
     fun loadFilm(id: Int) {
         viewModelScope.launch {
             _state.value = FilmDetailState.Loading
+
             getFilmByIdUseCase(id)
-                .onSuccess { _state.value = FilmDetailState.Success(it) }
-                .onFailure { _state.value = FilmDetailState.Error(it.message ?: "Ошибка") }
+                .onSuccess { film ->
+                    _state.value = FilmDetailState.Success(film)
+                }
+                .onFailure { error ->
+                    _state.value = FilmDetailState.Error(
+                        error.message ?: getDefaultErrorMessage()
+                    )
+                }
         }
     }
 
@@ -48,10 +56,15 @@ class FilmDetailViewModel @Inject constructor(
             addToFavoritesUseCase(film.id)
                 .onSuccess {
                     updateFilm(film.copy(isFavorite = !film.isFavorite))
-                    _snackbarMessage.value = if (!film.isFavorite)
-                        "Добавлено в избранное" else "Удалено из избранного"
+                    _snackbarMessage.value = if (!film.isFavorite) {
+                        getFavoriteAddedMessage()
+                    } else {
+                        getFavoriteRemovedMessage()
+                    }
                 }
-                .onFailure { _snackbarMessage.value = it.message ?: "Ошибка" }
+                .onFailure { error ->
+                    _snackbarMessage.value = error.message ?: getDefaultErrorMessage()
+                }
         }
     }
 
@@ -62,16 +75,20 @@ class FilmDetailViewModel @Inject constructor(
                 removeFromWatchLaterUseCase(film.id)
                     .onSuccess {
                         updateFilm(film.copy(isWatchLater = false))
-                        _snackbarMessage.value = "Удалено из списка"
+                        _snackbarMessage.value = getWatchLaterRemovedMessage()
                     }
-                    .onFailure { _snackbarMessage.value = it.message ?: "Ошибка" }
+                    .onFailure { error ->
+                        _snackbarMessage.value = error.message ?: getDefaultErrorMessage()
+                    }
             } else {
                 addToWatchLaterUseCase(film.id)
                     .onSuccess {
                         updateFilm(film.copy(isWatchLater = true))
-                        _snackbarMessage.value = "Добавлено в «Посмотреть позже»"
+                        _snackbarMessage.value = getWatchLaterAddedMessage()
                     }
-                    .onFailure { _snackbarMessage.value = it.message ?: "Ошибка" }
+                    .onFailure { error ->
+                        _snackbarMessage.value = error.message ?: getDefaultErrorMessage()
+                    }
             }
         }
     }
@@ -80,10 +97,16 @@ class FilmDetailViewModel @Inject constructor(
         _snackbarMessage.value = null
     }
 
-    private fun currentFilm() =
+    private fun currentFilm(): Film? =
         (_state.value as? FilmDetailState.Success)?.film
 
     private fun updateFilm(film: Film) {
         _state.value = FilmDetailState.Success(film)
     }
+
+    private fun getDefaultErrorMessage(): String = "Ошибка"
+    private fun getFavoriteAddedMessage(): String = "Добавлено в избранное"
+    private fun getFavoriteRemovedMessage(): String = "Удалено из избранного"
+    private fun getWatchLaterAddedMessage(): String = "Добавлено в «Посмотреть позже»"
+    private fun getWatchLaterRemovedMessage(): String = "Удалено из списка"
 }

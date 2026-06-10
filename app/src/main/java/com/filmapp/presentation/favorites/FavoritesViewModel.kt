@@ -2,6 +2,7 @@ package com.filmapp.presentation.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.filmapp.R
 import com.filmapp.domain.model.Film
 import com.filmapp.domain.usecase.film.GetFavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,12 +35,19 @@ class FavoritesViewModel @Inject constructor(
             _state.value = FavoritesState.Loading
             getFavoritesUseCase()
                 .onSuccess { films ->
-                    _state.value = if (films.isEmpty()) FavoritesState.Empty
-                    else FavoritesState.Success(films)
+                    _state.value = if (films.isEmpty()) {
+                        FavoritesState.Empty
+                    } else {
+                        FavoritesState.Success(films)
+                    }
                 }
-                .onFailure {
-                    _state.value = FavoritesState.Error(it.message ?: "Ошибка загрузки")
+                .onFailure { error ->
+                    _state.value = FavoritesState.Error(
+                        error.message ?: getDefaultErrorMessage()
+                    )
                 }
         }
     }
+
+    private fun getDefaultErrorMessage(): String = "Ошибка загрузки"
 }

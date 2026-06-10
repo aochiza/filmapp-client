@@ -21,7 +21,7 @@ fun SearchHistorySection(
     onQueryClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (queries.isEmpty()) return
+    if (queries.isEmpty()) return //если пусто
 
     Column(
         modifier = modifier

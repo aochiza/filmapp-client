@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 fun FilmAppTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    navigationIcon: ImageVector? = null,
+    navigationIcon: ImageVector? = null,//назад
     onNavigationClick: (() -> Unit)? = null,
     navigationContentDescription: String = stringResource(com.filmapp.R.string.cd_back),
     actions: @Composable RowScope.() -> Unit = {},
@@ -52,6 +52,7 @@ fun FilmAppTopBar(
         )
     }
 
+    //назад
     val navIcon: @Composable () -> Unit = {
         if (navigationIcon != null && onNavigationClick != null) {
             IconButton(onClick = onNavigationClick) {
@@ -63,6 +64,7 @@ fun FilmAppTopBar(
         }
     }
 
+    //для авторизации и входа
     if (centered) {
         CenterAlignedTopAppBar(
             modifier = modifier,
@@ -71,6 +73,7 @@ fun FilmAppTopBar(
             actions = actions,
             colors = colors
         )
+        //для остальных
     } else {
         TopAppBar(
             modifier = modifier,

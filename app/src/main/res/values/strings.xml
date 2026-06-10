@@ -26,10 +26,12 @@
     <string name="login_error">Ошибка входа</string>
     <string name="register_error">Ошибка регистрации</string>
 
-    <!-- Content descriptions для accessibility -->
+    <!-- Прочее -->
     <string name="cd_show_password">Показать пароль</string>
     <string name="cd_hide_password">Скрыть пароль</string>
     <string name="cd_back">Назад</string>
+    <string name="cd_watch_later">Посмотреть позже</string>
+    <string name="cd_favorite">Избранное</string>
 
     <!-- Компоненты -->
     <string name="emoji_film">🎬</string>
@@ -38,4 +40,71 @@
     <string name="empty_state_title_default">Ничего не найдено</string>
     <string name="error_state_title_default">Ошибка</string>
     <string name="error_state_subtitle_default">Что-то пошло не так</string>
+
+    <!-- Экран деталей фильма -->
+    <string name="loading_film">Загрузка фильма...</string>
+    <string name="error_loading_title">Ошибка загрузки</string>
+    <string name="director_label">Режиссёр</string>
+    <string name="director_label_format">%s:</string>
+    <string name="description_label">Описание</string>
+    <string name="minutes_format">%d мин</string>
+
+    <!-- Сообщения для Snackbar -->
+    <string name="favorite_added">Добавлено в избранное</string>
+    <string name="favorite_removed">Удалено из избранного</string>
+    <string name="watch_later_added">Добавлено в «Посмотреть позже»</string>
+    <string name="watch_later_removed">Удалено из списка</string>
+    <string name="error_occurred">Ошибка</string>
+    <string name="error_loading_film">Ошибка загрузки фильма</string>
+
+    <!-- Экран деталей фильма -->
+    <string name="favorite_added">Добавлено в избранное</string>
+    <string name="favorite_removed">Удалено из избранного</string>
+    <string name="watch_later_added">Добавлено в «Посмотреть позже»</string>
+    <string name="watch_later_removed">Удалено из списка</string>
+    <string name="error_loading_film">Ошибка загрузки фильма</string>
+    <string name="error_occurred">Ошибка</string>
+
+    <!-- Экран поиска -->
+    <string name="search_title">Поиск</string>
+    <string name="search_placeholder">Название, режиссёр...</string>
+    <string name="filter_button">Фильтры</string>
+    <string name="clear_search">Очистить</string>
+
+    <!-- Фильтры -->
+    <string name="filter_genre_label">Жанр</string>
+    <string name="filter_rating_label">Минимальный рейтинг</string>
+    <string name="filter_rating_any">Любой</string>
+    <string name="filter_clear_button">Сбросить фильтры</string>
+
+    <!-- Экран деталей фильма -->
+    <string name="favorite_added">Добавлено в избранное</string>
+    <string name="favorite_removed">Удалено из избранного</string>
+    <string name="watch_later_added">Добавлено в «Посмотреть позже»</string>
+    <string name="watch_later_removed">Удалено из списка</string>
+    <string name="error_loading_film">Ошибка загрузки фильма</string>
+    <string name="error_occurred">Ошибка</string>
+    <!-- Состояния поиска -->
+    <string name="search_idle_emoji">🔍</string>
+    <string name="search_idle_title">Введите запрос для поиска</string>
+    <string name="search_idle_subtitle">Используйте фильтры для точного результата</string>
+
+    <string name="search_empty_emoji">😕</string>
+    <string name="search_empty_title">Ничего не найдено</string>
+    <string name="search_empty_subtitle">Попробуйте другой запрос или сбросьте фильтры</string>
+
+    <!-- Экран избранного -->
+    <string name="favorites_title">Избранное</string>
+    <string name="favorites_loading">Загрузка избранного...</string>
+    <string name="favorites_empty_emoji">❤️</string>
+    <string name="favorites_empty_title">Избранное пусто</string>
+    <string name="favorites_empty_subtitle">Добавляйте фильмы, нажав на сердечко</string>
+    <string name="favorites_error_title">Ошибка</string>
+    <string name="favorites_error_default">Ошибка загрузки</string>
+
+
+    <!-- Сообщение об ошибке -->
+    <string name="search_error_default">Ошибка поиска</string>
+
+
 </resources>
