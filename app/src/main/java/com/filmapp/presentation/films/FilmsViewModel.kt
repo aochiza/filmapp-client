@@ -2,16 +2,17 @@ package com.filmapp.presentation.films
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.filmapp.R
 import com.filmapp.data.local.SearchHistoryStore
 import com.filmapp.domain.model.Film
 import com.filmapp.domain.model.Genre
 import com.filmapp.domain.repository.AuthRepository
 import com.filmapp.domain.usecase.film.AddToFavoritesUseCase
 import com.filmapp.domain.usecase.film.AddToWatchLaterUseCase
+import com.filmapp.domain.usecase.film.DeleteFilmUseCase
 import com.filmapp.domain.usecase.film.GetFilmsUseCase
 import com.filmapp.domain.usecase.film.RemoveFromWatchLaterUseCase
 import com.filmapp.domain.usecase.genre.GetGenresUseCase
-import com.filmapp.domain.usecase.film.DeleteFilmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -72,6 +73,7 @@ class FilmsViewModel @Inject constructor(
     private val allFilms = mutableListOf<Film>()
 
     init {
+        //получаем роль
         viewModelScope.launch {
             authRepository.getCurrentRole().collect { role ->
                 _isAdmin.value = role == "ADMIN"
@@ -81,8 +83,8 @@ class FilmsViewModel @Inject constructor(
         viewModelScope.launch {
             _searchQuery
                 .debounce(400)
-                .distinctUntilChanged()
-                .drop(1)
+                .distinctUntilChanged()//не ищем дважды
+                .drop(1)//пропуск пустое
                 .collect {
                     resetPagination()
                     loadFilms()
@@ -92,6 +94,7 @@ class FilmsViewModel @Inject constructor(
         loadGenres()
         loadFilms()
     }
+
 
     fun loadFilms() {
         if (isLoadingPage || (currentPage > 1 && isLastPage)) return
@@ -122,6 +125,7 @@ class FilmsViewModel @Inject constructor(
                             currentPage++
                         }
 
+                        //сохраняем запрос в историю
                         val trimmedQuery = _searchQuery.value.trim()
                         if (pageToLoad == 1 && trimmedQuery.isNotBlank()) {
                             searchHistoryStore.addQuery(trimmedQuery)
@@ -129,10 +133,10 @@ class FilmsViewModel @Inject constructor(
 
                         publishFilteredList()
                     }
-                    .onFailure {
+                    .onFailure { error ->
                         if (pageToLoad == 1) {
                             _filmsState.value = FilmsState.Error(
-                                it.message ?: "Ошибка загрузки"
+                                error.message ?: getDefaultErrorMessage()
                             )
                         }
                     }
@@ -141,6 +145,7 @@ class FilmsViewModel @Inject constructor(
             }
         }
     }
+
 
     fun loadNextPage() {
         if (isLastPage || isLoadingPage) return
@@ -151,9 +156,11 @@ class FilmsViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
+
     fun onHistoryQuerySelected(query: String) {
         _searchQuery.value = query
     }
+
 
     fun onGenreSelected(genreId: Int?) {
         _selectedGenreId.value = genreId
@@ -164,12 +171,14 @@ class FilmsViewModel @Inject constructor(
         loadFilms()
     }
 
+
     fun applyAdvancedFilters(filters: FilmsAdvancedFilters) {
         _advancedFilters.value = filters
         _selectedGenreId.value = filters.apiGenreId
         resetPagination()
         loadFilms()
     }
+
 
     fun resetAdvancedFilters() {
         _advancedFilters.value = FilmsAdvancedFilters()
@@ -178,17 +187,13 @@ class FilmsViewModel @Inject constructor(
         loadFilms()
     }
 
+
     fun toggleFavorite(film: Film) {
         viewModelScope.launch {
             if (!film.isFavorite) {
                 addToFavoritesUseCase(film.id)
             }
-            val updated = allFilms.map {
-                if (it.id == film.id) it.copy(isFavorite = !it.isFavorite) else it
-            }
-            allFilms.clear()
-            allFilms.addAll(updated)
-            publishFilteredList()
+            updateFilmInList(film.copy(isFavorite = !film.isFavorite))
         }
     }
 
@@ -199,33 +204,10 @@ class FilmsViewModel @Inject constructor(
             } else {
                 addToWatchLaterUseCase(film.id)
             }
-            val updated = allFilms.map {
-                if (it.id == film.id) it.copy(isWatchLater = !it.isWatchLater) else it
-            }
-            allFilms.clear()
-            allFilms.addAll(updated)
-            publishFilteredList()
+            updateFilmInList(film.copy(isWatchLater = !film.isWatchLater))
         }
     }
 
-    private fun loadGenres() {
-        viewModelScope.launch {
-            getGenresUseCase().onSuccess { _genres.value = it }
-        }
-    }
-
-    private fun resetPagination() {
-        loadJob?.cancel()
-        isLoadingPage = false
-        currentPage = 1
-        isLastPage = false
-        allFilms.clear()
-    }
-
-    private fun publishFilteredList() {
-        val filtered = allFilms.applyAdvancedFilters(_advancedFilters.value)
-        _filmsState.value = FilmsState.Success(filtered)
-    }
 
     fun deleteFilm(filmId: Int) {
         viewModelScope.launch {
@@ -236,11 +218,47 @@ class FilmsViewModel @Inject constructor(
                     allFilms.addAll(updated)
                     publishFilteredList()
                 }
-                .onFailure {
+                .onFailure { error ->
                     _filmsState.value = FilmsState.Error(
-                        it.message ?: "Ошибка удаления фильма"
+                        error.message ?: getDeleteErrorMessage()
                     )
                 }
         }
     }
+
+    private fun loadGenres() {
+        viewModelScope.launch {
+            getGenresUseCase().onSuccess { genres ->
+                _genres.value = genres
+            }
+        }
+    }
+
+    //сброс при новом посике
+    private fun resetPagination() {
+        loadJob?.cancel()
+        isLoadingPage = false
+        currentPage = 1
+        isLastPage = false
+        allFilms.clear()
+    }
+
+    //применение фильтров
+    private fun publishFilteredList() {
+        val filtered = allFilms.applyAdvancedFilters(_advancedFilters.value)
+        _filmsState.value = FilmsState.Success(filtered)
+    }
+
+
+    private fun updateFilmInList(updatedFilm: Film) {
+        val updatedList = allFilms.map { film ->
+            if (film.id == updatedFilm.id) updatedFilm else film
+        }
+        allFilms.clear()
+        allFilms.addAll(updatedList)
+        publishFilteredList()
+    }
+
+    private fun getDefaultErrorMessage(): String = "Ошибка загрузки"
+    private fun getDeleteErrorMessage(): String = "Ошибка удаления фильма"
 }

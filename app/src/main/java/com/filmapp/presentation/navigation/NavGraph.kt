@@ -118,6 +118,8 @@ fun NavGraph(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
+
+        //контейнер маршрутов
         NavHost(
             navController = navController,
             startDestination = startDestination,

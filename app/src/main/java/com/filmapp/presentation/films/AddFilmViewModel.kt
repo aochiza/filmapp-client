@@ -28,8 +28,7 @@ class AddFilmViewModel @Inject constructor(
     private val _genres = MutableStateFlow<List<Genre>>(emptyList())
     val genres: StateFlow<List<Genre>> = _genres
 
-    private val _state =
-        MutableStateFlow<AddFilmState>(AddFilmState.Idle)
+    private val _state = MutableStateFlow<AddFilmState>(AddFilmState.Idle)
     val state: StateFlow<AddFilmState> = _state
 
     init {
@@ -39,8 +38,11 @@ class AddFilmViewModel @Inject constructor(
     private fun loadGenres() {
         viewModelScope.launch {
             getGenresUseCase()
-                .onSuccess {
-                    _genres.value = it
+                .onSuccess { genres ->
+                    _genres.value = genres
+                }
+                .onFailure { error ->
+                    _genres.value = emptyList()
                 }
         }
     }
@@ -59,21 +61,18 @@ class AddFilmViewModel @Inject constructor(
         viewModelScope.launch {
 
             if (title.isBlank()) {
-                _state.value =
-                    AddFilmState.Error("Введите название фильма")
+                _state.value = AddFilmState.Error(getEmptyTitleError())
                 return@launch
             }
 
             val year = releaseYear.toIntOrNull()
             if (year == null) {
-                _state.value =
-                    AddFilmState.Error("Введите корректный год")
+                _state.value = AddFilmState.Error(getInvalidYearError())
                 return@launch
             }
 
             if (genreId == null) {
-                _state.value =
-                    AddFilmState.Error("Выберите жанр")
+                _state.value = AddFilmState.Error(getNoGenreError())
                 return@launch
             }
 
@@ -81,7 +80,7 @@ class AddFilmViewModel @Inject constructor(
 
             val request = FilmRequest(
                 title = title,
-                originalTitle = originalTitle.ifBlank { null },
+                originalTitle = originalTitle.ifBlank { null }, //преобр пустую строку в null
                 description = description.ifBlank { null },
                 releaseYear = year,
                 rating = rating.toDoubleOrNull(),
@@ -95,9 +94,9 @@ class AddFilmViewModel @Inject constructor(
                 .onSuccess {
                     _state.value = AddFilmState.Success
                 }
-                .onFailure {
+                .onFailure { error ->
                     _state.value = AddFilmState.Error(
-                        it.message ?: "Ошибка создания фильма"
+                        error.message ?: getDefaultErrorMessage()
                     )
                 }
         }
@@ -106,4 +105,10 @@ class AddFilmViewModel @Inject constructor(
     fun resetState() {
         _state.value = AddFilmState.Idle
     }
+
+    private fun getEmptyTitleError(): String = "Введите название фильма"
+    private fun getInvalidYearError(): String = "Введите корректный год"
+    private fun getNoGenreError(): String = "Выберите жанр"
+    private fun getDefaultErrorMessage(): String = "Ошибка создания фильма"
+    // endregion
 }

@@ -40,9 +40,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.filmapp.R
 import com.filmapp.domain.model.Film
 import com.filmapp.presentation.components.pressableScale
 import com.filmapp.presentation.theme.AccentGold
@@ -103,7 +105,6 @@ fun FilmCard(
                 .height(136.dp)
         ) {
 
-            android.util.Log.d("POSTER_URL", film.posterUrl ?: "NULL")
             Image(
                 painter = painterResource(
                     id = getFilmPosterRes(
@@ -119,6 +120,7 @@ fun FilmCard(
                     .clip(PosterShape)
             )
 
+            //информ о фильме
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -132,6 +134,7 @@ fun FilmCard(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
+
                     film.originalTitle?.let {
                         Text(
                             text = it,
@@ -141,6 +144,7 @@ fun FilmCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                         verticalAlignment = Alignment.CenterVertically
@@ -152,7 +156,7 @@ fun FilmCard(
                         )
                         film.genreName?.let {
                             Text(
-                                text = "• $it",
+                                text = stringResource(com.filmapp.R.string.card_genre_separator, it),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                 maxLines = 1,
@@ -203,7 +207,7 @@ fun FilmCard(
                                 } else {
                                     Icons.Default.BookmarkBorder
                                 },
-                                contentDescription = "Посмотреть позже",
+                                contentDescription = stringResource(R.string.card_watch_later),
                                 tint = if (film.isWatchLater) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -228,7 +232,7 @@ fun FilmCard(
                                 } else {
                                     Icons.Default.FavoriteBorder
                                 },
-                                contentDescription = "Избранное",
+                                contentDescription = stringResource(R.string.card_favorite),
                                 tint = favoriteTint,
                                 modifier = Modifier.size(20.dp)
                             )

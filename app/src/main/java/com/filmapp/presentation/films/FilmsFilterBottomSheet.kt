@@ -21,6 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
+import com.filmapp.R
 import com.filmapp.domain.model.Genre
 import com.filmapp.presentation.components.FilmAppButton
 import com.filmapp.presentation.components.FilmAppTextButton
@@ -67,25 +70,28 @@ fun FilmsFilterBottomSheet(
                 .padding(bottom = Spacing.xl)
         ) {
             Text(
-                text = "Фильтры",
+                text = stringResource(R.string.filters_title),
                 style = MaterialTheme.typography.headlineSmall
             )
             Text(
-                text = "Настройте отображение списка фильмов",
+                text = stringResource(R.string.filters_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
             )
 
             Spacer(modifier = Modifier.height(Spacing.lg))
 
-            FilterSectionTitle("Год выпуска")
+            FilterSectionTitle(stringResource(R.string.filters_year_section))
+
             val yearRange = FilmsAdvancedFilters.DEFAULT_YEAR_MIN.toFloat()..
-                FilmsAdvancedFilters.DEFAULT_YEAR_MAX.toFloat()
+                    FilmsAdvancedFilters.DEFAULT_YEAR_MAX.toFloat()
+
             Text(
-                text = "${draft.yearMin} — ${draft.yearMax}",
+                text = stringResource(R.string.filters_year_format, draft.yearMin, draft.yearMax),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
+
             RangeSlider(
                 value = draft.yearMin.toFloat()..draft.yearMax.toFloat(),
                 onValueChange = { range ->
@@ -106,7 +112,8 @@ fun FilmsFilterBottomSheet(
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
             )
 
-            FilterSectionTitle("Жанры")
+            FilterSectionTitle(stringResource(R.string.filters_genre_section))
+
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 verticalArrangement = Arrangement.spacedBy(Spacing.xs)
@@ -144,7 +151,8 @@ fun FilmsFilterBottomSheet(
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
             )
 
-            FilterSectionTitle("Страна")
+            FilterSectionTitle(stringResource(R.string.filters_country_section))
+
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 verticalArrangement = Arrangement.spacedBy(Spacing.xs)
@@ -152,7 +160,7 @@ fun FilmsFilterBottomSheet(
                 FilterChip(
                     selected = draft.country == null,
                     onClick = { draft = draft.copy(country = null) },
-                    label = { Text("Все") },
+                    label = { Text(stringResource(R.string.filters_country_all)) },
                     shape = ChipShape
                 )
                 FilmsAdvancedFilters.POPULAR_COUNTRIES.forEach { country ->
@@ -178,16 +186,22 @@ fun FilmsFilterBottomSheet(
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
             )
 
-            FilterSectionTitle("Минимальный рейтинг")
+            FilterSectionTitle(stringResource(R.string.filters_rating_section))
+
+            val ratingText = draft.minRating?.let {
+                stringResource(R.string.filters_rating_format, it)
+            } ?: stringResource(R.string.filters_rating_any)
+
             Text(
-                text = draft.minRating?.let { String.format("%.1f+", it) } ?: "Любой",
+                text = ratingText,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
-            androidx.compose.material3.Slider(
+
+            Slider(
                 value = draft.minRating ?: 0f,
-                onValueChange = {
-                    draft = draft.copy(minRating = if (it <= 0f) null else it)
+                onValueChange = { rating ->
+                    draft = draft.copy(minRating = if (rating <= 0f) null else rating)
                 },
                 valueRange = 0f..10f,
                 steps = 9,
@@ -202,7 +216,8 @@ fun FilmsFilterBottomSheet(
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
             )
 
-            FilterSectionTitle("Сортировка")
+            FilterSectionTitle(stringResource(R.string.filters_sort_section))
+
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 verticalArrangement = Arrangement.spacedBy(Spacing.xs)
@@ -211,7 +226,7 @@ fun FilmsFilterBottomSheet(
                     FilterChip(
                         selected = draft.sortBy == option,
                         onClick = { draft = draft.copy(sortBy = option) },
-                        label = { Text(option.label) },
+                        label = { Text(stringResource(getSortLabelResId(option))) },
                         shape = ChipShape,
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
@@ -222,21 +237,21 @@ fun FilmsFilterBottomSheet(
             }
 
             Spacer(modifier = Modifier.height(Spacing.lg))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FilmAppTextButton(
-                    text = "Сбросить",
+                    text = stringResource(com.filmapp.R.string.filters_reset_button),
                     onClick = {
                         draft = FilmsAdvancedFilters()
                         onReset()
                     }
                 )
+
                 FilmAppButton(
-                    text = "Применить",
+                    text = stringResource(R.string.filters_apply_button),
                     onClick = {
                         onApply(draft)
                         onDismiss()
@@ -257,4 +272,11 @@ private fun FilterSectionTitle(text: String) {
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(bottom = Spacing.xs)
     )
+}
+
+private fun getSortLabelResId(option: FilmSortOption): Int = when (option) {
+    FilmSortOption.DEFAULT -> R.string.sort_default
+    FilmSortOption.YEAR_DESC -> R.string.sort_year_desc
+    FilmSortOption.YEAR_ASC -> R.string.sort_year_asc
+    FilmSortOption.RATING_DESC -> R.string.sort_rating_desc
 }

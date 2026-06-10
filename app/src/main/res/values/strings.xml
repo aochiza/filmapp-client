@@ -102,9 +102,99 @@
     <string name="favorites_error_title">Ошибка</string>
     <string name="favorites_error_default">Ошибка загрузки</string>
 
+    <!-- Экран добавления фильма -->
+    <string name="add_film_title">Добавить фильм</string>
+    <string name="edit_film_title">Редактировать фильм</string>
+    <string name="add_film_button">Добавить фильм</string>
+    <string name="save_film_button">Сохранить</string>
+    <string name="back_button">Назад</string>
+
+    <!-- Поля ввода -->
+    <string name="field_title">Название</string>
+    <string name="field_original_title">Оригинальное название</string>
+    <string name="field_description">Описание</string>
+    <string name="field_release_year">Год выпуска</string>
+    <string name="field_rating">Рейтинг</string>
+    <string name="field_poster_url">URL постера</string>
+    <string name="field_genre">Жанр</string>
+    <string name="field_director">Режиссёр</string>
+    <string name="field_duration">Длительность (мин)</string>
+
+    <!-- Сообщения валидации AddFilm -->
+    <string name="error_empty_title">Введите название фильма</string>
+    <string name="error_invalid_year">Введите корректный год</string>
+    <string name="error_no_genre">Выберите жанр</string>
+    <string name="error_create_film_default">Ошибка создания фильма</string>
+
+    <!-- Карточка фильма -->
+    <string name="card_watch_later">Посмотреть позже</string>
+    <string name="card_favorite">Избранное</string>
+
+    <!-- Карточка фильма -->
+    <string name="card_watch_later">Посмотреть позже</string>
+    <string name="card_favorite">Избранное</string>
+    <string name="card_genre_separator">• %s</string>
 
     <!-- Сообщение об ошибке -->
     <string name="search_error_default">Ошибка поиска</string>
+    <string name="error_empty_title">Введите название фильма</string>
+    <string name="error_empty_year">Введите год выпуска</string>
+    <string name="error_invalid_year">Год должен быть от 1900 до текущего</string>
+    <string name="error_invalid_rating">Рейтинг должен быть от 0 до 10</string>
+    <string name="error_invalid_duration">Длительность должна быть положительным числом</string>
+
+    <!-- Фильтры и сортировка -->
+    <string name="sort_default">По умолчанию</string>
+    <string name="sort_year_desc">Сначала новые</string>
+    <string name="sort_year_asc">Сначала старые</string>
+    <string name="sort_rating_desc">По рейтингу</string>
+
+    <!-- Страны (для фильтра) -->
+    <string name="country_usa">США</string>
+    <string name="country_russia">Россия</string>
+    <string name="country_uk">Великобритания</string>
+    <string name="country_france">Франция</string>
+    <string name="country_germany">Германия</string>
+    <string name="country_japan">Япония</string>
+    <string name="country_korea">Корея</string>
+    <string name="country_india">Индия</string>
+    <string name="country_italy">Италия</string>
+    <string name="country_spain">Испания</string>
+
+    <!-- Фильтры (Bottom Sheet) -->
+    <string name="filters_title">Фильтры</string>
+    <string name="filters_subtitle">Настройте отображение списка фильмов</string>
+    <string name="filters_year_section">Год выпуска</string>
+    <string name="filters_genre_section">Жанры</string>
+    <string name="filters_country_section">Страна</string>
+    <string name="filters_rating_section">Минимальный рейтинг</string>
+    <string name="filters_sort_section">Сортировка</string>
+    <string name="filters_rating_any">Любой</string>
+    <string name="filters_rating_format">%.1f+</string>
+    <string name="filters_year_format">%d — %d</string>
+    <string name="filters_country_all">Все</string>
+    <string name="filters_reset_button">Сбросить</string>
+    <string name="filters_apply_button">Применить</string>
+
+    <!-- Сортировка -->
+    <string name="sort_default">По умолчанию</string>
+    <string name="sort_year_desc">Сначала новые</string>
+    <string name="sort_year_asc">Сначала старые</string>
+    <string name="sort_rating_desc">По рейтингу</string>
+
+    <!-- Экран списка фильмов -->
+    <string name="films_app_title">FilmApp</string>
+    <string name="films_search_placeholder">Поиск фильмов...</string>
+    <string name="filter_button">Фильтры</string>
+    <string name="add_film_fab">Добавить фильм</string>
+    <string name="delete_film">Удалить</string>
+    <string name="error_loading_title">Ошибка загрузки</string>
+    <string name="empty_films_emoji">🎬</string>
+    <string name="empty_films_title">Фильмы не найдены</string>
+    <string name="empty_films_subtitle">Измените фильтры или поисковый запрос</string>
+
+    <string name="error_loading_default">Ошибка загрузки</string>
+    <string name="error_delete_default">Ошибка удаления фильма</string>
 
 
 </resources>

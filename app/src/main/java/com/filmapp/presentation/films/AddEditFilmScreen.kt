@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,9 +14,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.filmapp.R
 import com.filmapp.domain.model.Genre
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,6 +45,7 @@ fun AddEditFilmScreen(
         mutableStateOf<Genre?>(null)
     }
 
+    //отслеж успеш создание и закрывает
     LaunchedEffect(state) {
         if (state is AddFilmState.Success) {
             viewModel.resetState()
@@ -53,13 +57,13 @@ fun AddEditFilmScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Добавить фильм")
+                    Text(stringResource(R.string.add_film_title))
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Назад"
+                            contentDescription = stringResource(R.string.back_button)
                         )
                     }
                 }
@@ -81,7 +85,7 @@ fun AddEditFilmScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Название") },
+                label = { Text(stringResource(R.string.field_title)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -89,7 +93,7 @@ fun AddEditFilmScreen(
                 value = originalTitle,
                 onValueChange = { originalTitle = it },
                 label = {
-                    Text("Оригинальное название")
+                    Text(stringResource(R.string.field_original_title))
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -97,7 +101,7 @@ fun AddEditFilmScreen(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Описание") },
+                label = { Text(stringResource(R.string.field_description)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 4
             )
@@ -105,7 +109,7 @@ fun AddEditFilmScreen(
             OutlinedTextField(
                 value = releaseYear,
                 onValueChange = { releaseYear = it },
-                label = { Text("Год выпуска") },
+                label = { Text(stringResource(R.string.field_release_year)) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
@@ -115,7 +119,7 @@ fun AddEditFilmScreen(
             OutlinedTextField(
                 value = rating,
                 onValueChange = { rating = it },
-                label = { Text("Рейтинг") },
+                label = { Text(stringResource(R.string.field_rating)) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
                 ),
@@ -125,10 +129,11 @@ fun AddEditFilmScreen(
             OutlinedTextField(
                 value = posterUrl,
                 onValueChange = { posterUrl = it },
-                label = { Text("URL постера") },
+                label = { Text(stringResource(R.string.field_poster_url)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
+            //выпадающий
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = {
@@ -139,7 +144,7 @@ fun AddEditFilmScreen(
                     value = selectedGenre?.name ?: "",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Жанр") },
+                    label = { Text(stringResource(R.string.field_genre)) },
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(
                             expanded = expanded
@@ -173,7 +178,7 @@ fun AddEditFilmScreen(
             OutlinedTextField(
                 value = director,
                 onValueChange = { director = it },
-                label = { Text("Режиссёр") },
+                label = { Text(stringResource(R.string.field_director)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -181,7 +186,7 @@ fun AddEditFilmScreen(
                 value = duration,
                 onValueChange = { duration = it },
                 label = {
-                    Text("Длительность (мин)")
+                    Text(stringResource(R.string.field_duration))
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
@@ -215,10 +220,11 @@ fun AddEditFilmScreen(
             ) {
                 if (state is AddFilmState.Loading) {
                     CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Добавить фильм")
+                    Text(stringResource(R.string.add_film_button))
                 }
             }
         }

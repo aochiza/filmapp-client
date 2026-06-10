@@ -3,6 +3,7 @@ package com.filmapp.presentation.films
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Badge
@@ -25,7 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,21 +39,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.filmapp.R
+import com.filmapp.presentation.components.FilmAppEmptyState
 import com.filmapp.presentation.components.FilmAppErrorState
 import com.filmapp.presentation.components.FilmAppTopBar
-import com.filmapp.presentation.components.FilmAppEmptyState
 import com.filmapp.presentation.components.FilmCardSkeleton
 import com.filmapp.presentation.components.SearchHistorySection
 import com.filmapp.presentation.components.pressableScale
 import com.filmapp.presentation.theme.Spacing
-import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Alignment
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import com.filmapp.presentation.theme.TextFieldShape
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +96,7 @@ fun FilmsScreen(
     Scaffold(
         topBar = {
             FilmAppTopBar(
-                title = "FilmApp",
+                title = stringResource(R.string.films_app_title),
                 actions = {
                     IconButton(
                         onClick = { showFilterSheet = true },
@@ -109,7 +111,7 @@ fun FilmsScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
-                                contentDescription = "Фильтры",
+                                contentDescription = stringResource(R.string.filter_button),
                                 tint = if (advancedFilters.hasActiveFilters) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -128,12 +130,11 @@ fun FilmsScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Добавить фильм"
+                        contentDescription = stringResource(R.string.add_film_fab)
                     )
                 }
             }
         },
-
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
@@ -149,7 +150,7 @@ fun FilmsScreen(
                     onValueChange = { viewModel.onSearchQueryChanged(it) },
                     placeholder = {
                         Text(
-                            "Поиск фильмов...",
+                            stringResource(R.string.films_search_placeholder),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
                         )
                     },
@@ -192,7 +193,7 @@ fun FilmsScreen(
                         item {
                             AllGenresChip(
                                 isSelected = selectedGenreId == null &&
-                                    advancedFilters.selectedGenreIds.isEmpty(),
+                                        advancedFilters.selectedGenreIds.isEmpty(),
                                 onClick = { viewModel.onGenreSelected(null) }
                             )
                         }
@@ -200,14 +201,13 @@ fun FilmsScreen(
                             GenreChip(
                                 genre = genre,
                                 isSelected = selectedGenreId == genre.id ||
-                                    genre.id in advancedFilters.selectedGenreIds,
+                                        genre.id in advancedFilters.selectedGenreIds,
                                 onClick = { viewModel.onGenreSelected(genre.id) }
                             )
                         }
                     }
                 }
             }
-
             when (val state = filmsState) {
                 is FilmsState.Loading -> {
                     items(6) {
@@ -223,7 +223,7 @@ fun FilmsScreen(
                 is FilmsState.Error -> {
                     item {
                         FilmAppErrorState(
-                            title = "Ошибка загрузки",
+                            title = stringResource(R.string.error_loading_title),
                             message = state.message,
                             onRetry = { viewModel.loadFilms() }
                         )
@@ -234,9 +234,9 @@ fun FilmsScreen(
                     if (state.films.isEmpty()) {
                         item {
                             FilmAppEmptyState(
-                                emoji = "🎬",
-                                title = "Фильмы не найдены",
-                                subtitle = "Измените фильтры или поисковый запрос"
+                                emoji = stringResource(R.string.empty_films_emoji),
+                                title = stringResource(R.string.empty_films_title),
+                                subtitle = stringResource(R.string.empty_films_subtitle)
                             )
                         }
                     } else {
@@ -246,28 +246,21 @@ fun FilmsScreen(
                                 enter = fadeIn(),
                                 exit = fadeOut()
                             ) {
-                                val dismissState =
-                                    rememberSwipeToDismissBoxState(
-                                        confirmValueChange = { value ->
-
-                                            if (
-                                                value ==
-                                                SwipeToDismissBoxValue.EndToStart
-                                            ) {
-                                                viewModel.deleteFilm(film.id)
-                                                true
-                                            } else {
-                                                false
-                                            }
+                                val dismissState = rememberSwipeToDismissBoxState(
+                                    confirmValueChange = { value ->
+                                        if (value == SwipeToDismissBoxValue.EndToStart) {
+                                            viewModel.deleteFilm(film.id)
+                                            true
+                                        } else {
+                                            false
                                         }
-                                    )
+                                    }
+                                )
 
                                 if (isAdmin) {
-
                                     SwipeToDismissBox(
                                         state = dismissState,
                                         enableDismissFromStartToEnd = false,
-
                                         backgroundContent = {
                                             Box(
                                                 modifier = Modifier
@@ -276,57 +269,35 @@ fun FilmsScreen(
                                                         horizontal = Spacing.screenHorizontal,
                                                         vertical = Spacing.cardVertical
                                                     ),
-                                                contentAlignment =
-                                                    Alignment.CenterEnd
+                                                contentAlignment = Alignment.CenterEnd
                                             ) {
                                                 Icon(
-                                                    imageVector =
-                                                        Icons.Default.Delete,
-                                                    contentDescription =
-                                                        "Удалить"
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = stringResource(R.string.delete_film)
                                                 )
                                             }
                                         }
                                     ) {
-
                                         FilmCard(
                                             film = film,
-                                            onClick = {
-                                                onFilmClick(film.id)
-                                            },
-                                            onFavoriteClick = {
-                                                viewModel.toggleFavorite(film)
-                                            },
-                                            onWatchLaterClick = {
-                                                viewModel.toggleWatchLater(film)
-                                            },
+                                            onClick = { onFilmClick(film.id) },
+                                            onFavoriteClick = { viewModel.toggleFavorite(film) },
+                                            onWatchLaterClick = { viewModel.toggleWatchLater(film) },
                                             modifier = Modifier.padding(
-                                                horizontal =
-                                                    Spacing.screenHorizontal,
-                                                vertical =
-                                                    Spacing.cardVertical
+                                                horizontal = Spacing.screenHorizontal,
+                                                vertical = Spacing.cardVertical
                                             )
                                         )
                                     }
-
                                 } else {
-
                                     FilmCard(
                                         film = film,
-                                        onClick = {
-                                            onFilmClick(film.id)
-                                        },
-                                        onFavoriteClick = {
-                                            viewModel.toggleFavorite(film)
-                                        },
-                                        onWatchLaterClick = {
-                                            viewModel.toggleWatchLater(film)
-                                        },
+                                        onClick = { onFilmClick(film.id) },
+                                        onFavoriteClick = { viewModel.toggleFavorite(film) },
+                                        onWatchLaterClick = { viewModel.toggleWatchLater(film) },
                                         modifier = Modifier.padding(
-                                            horizontal =
-                                                Spacing.screenHorizontal,
-                                            vertical =
-                                                Spacing.cardVertical
+                                            horizontal = Spacing.screenHorizontal,
+                                            vertical = Spacing.cardVertical
                                         )
                                     )
                                 }
