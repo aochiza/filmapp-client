@@ -1,3 +1,41 @@
 <resources>
-    <string name="app_name">filmapp</string>
+    <!-- Заголовки и подзаголовки экранов -->
+    <string name="app_name">FilmApp</string>
+    <string name="login_title">FilmApp</string>
+    <string name="login_subtitle">Войдите в аккаунт</string>
+    <string name="register_title">Создать аккаунт</string>
+    <string name="register_subtitle">Заполните данные для регистрации</string>
+
+    <!-- Поля ввода -->
+    <string name="email_label">Email</string>
+    <string name="password_label">Пароль</string>
+    <string name="username_label">Имя пользователя</string>
+
+    <!-- Кнопки -->
+    <string name="login_button">Войти</string>
+    <string name="register_button">Зарегистрироваться</string>
+    <string name="to_register_button">Нет аккаунта? Зарегистрируйтесь</string>
+    <string name="to_login_button">Уже есть аккаунт? Войти</string>
+    <string name="retry_button">Повторить</string>
+
+    <!-- Сообщения об ошибках -->
+    <string name="empty_username_error">Введите имя пользователя</string>
+    <string name="empty_email_error">Введите email</string>
+    <string name="empty_password_error">Введите пароль</string>
+    <string name="password_too_short">Пароль должен быть не менее 6 символов</string>
+    <string name="login_error">Ошибка входа</string>
+    <string name="register_error">Ошибка регистрации</string>
+
+    <!-- Content descriptions для accessibility -->
+    <string name="cd_show_password">Показать пароль</string>
+    <string name="cd_hide_password">Скрыть пароль</string>
+    <string name="cd_back">Назад</string>
+
+    <!-- Компоненты -->
+    <string name="emoji_film">🎬</string>
+    <string name="recent_searches_title">Недавние запросы</string>
+    <string name="loading_message_default">Загрузка...</string>
+    <string name="empty_state_title_default">Ничего не найдено</string>
+    <string name="error_state_title_default">Ошибка</string>
+    <string name="error_state_subtitle_default">Что-то пошло не так</string>
 </resources>

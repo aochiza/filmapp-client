@@ -12,6 +12,7 @@ import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.filmapp.presentation.theme.Spacing
 
 @Composable
@@ -29,7 +30,7 @@ fun SearchHistorySection(
         verticalArrangement = Arrangement.spacedBy(Spacing.xs)
     ) {
         Text(
-            text = "Недавние запросы",
+            text = stringResource(com.filmapp.R.string.recent_searches_title),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )

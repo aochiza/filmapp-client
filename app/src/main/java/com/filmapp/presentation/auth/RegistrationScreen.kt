@@ -20,11 +20,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import com.filmapp.R
 import com.filmapp.presentation.components.AuthScreenLayout
 import com.filmapp.presentation.components.FilmAppButton
 import com.filmapp.presentation.components.FilmAppTextButton
@@ -57,8 +59,8 @@ fun RegisterScreen(
     }
 
     AuthScreenLayout(
-        title = "Создать аккаунт",
-        subtitle = "Заполните данные для регистрации"
+        title = stringResource(R.string.register_title),
+        subtitle = stringResource(R.string.register_subtitle)
     ) {
         FilmAppTextField(
             value = name,
@@ -66,7 +68,7 @@ fun RegisterScreen(
                 name = it
                 errorMessage = null
             },
-            label = "Имя пользователя",
+            label = stringResource(R.string.username_label),
             isError = errorMessage != null,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
@@ -80,7 +82,7 @@ fun RegisterScreen(
                 email = it
                 errorMessage = null
             },
-            label = "Email",
+            label = stringResource(R.string.email_label),
             isError = errorMessage != null,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
@@ -97,7 +99,7 @@ fun RegisterScreen(
                 password = it
                 errorMessage = null
             },
-            label = "Пароль",
+            label = stringResource(R.string.password_label),
             isError = errorMessage != null,
             visualTransformation = if (passwordVisible) {
                 VisualTransformation.None
@@ -122,7 +124,11 @@ fun RegisterScreen(
                         } else {
                             Icons.Default.VisibilityOff
                         },
-                        contentDescription = null
+                        contentDescription = if (passwordVisible) {
+                            stringResource(R.string.cd_hide_password)
+                        } else {
+                            stringResource(R.string.cd_show_password)
+                        }
                     )
                 }
             }
@@ -139,7 +145,7 @@ fun RegisterScreen(
         }
 
         FilmAppButton(
-            text = "Зарегистрироваться",
+            text = stringResource(R.string.register_button),
             onClick = {
                 focusManager.clearFocus()
                 viewModel.register(email, password, name)
@@ -148,7 +154,7 @@ fun RegisterScreen(
         )
 
         FilmAppTextButton(
-            text = "Уже есть аккаунт? Войти",
+            text = stringResource(R.string.to_login_button),
             onClick = onNavigateToLogin,
             modifier = Modifier.fillMaxWidth()
         )

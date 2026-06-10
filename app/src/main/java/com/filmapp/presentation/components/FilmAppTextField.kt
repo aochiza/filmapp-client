@@ -31,6 +31,7 @@ fun FilmAppTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     trailingIcon: @Composable (() -> Unit)? = null
 ) {
+    //поле ввода с рамкой
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -53,6 +54,7 @@ fun FilmAppTextField(
         )
     )
 
+    //анимац ошибки
     AnimatedVisibility(
         visible = errorMessage != null,
         enter = fadeIn() + expandVertically(),

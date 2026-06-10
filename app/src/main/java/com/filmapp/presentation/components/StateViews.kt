@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.filmapp.presentation.theme.CardShape
@@ -31,7 +32,7 @@ import com.filmapp.presentation.theme.Spacing
 @Composable
 fun FilmAppLoading(
     modifier: Modifier = Modifier,
-    message: String? = null
+    message: String? = stringResource(com.filmapp.R.string.loading_message_default)
 ) {
     Column(
         modifier = modifier.padding(Spacing.xl),
@@ -56,7 +57,7 @@ fun FilmAppLoading(
 @Composable
 fun FilmAppEmptyState(
     emoji: String,
-    title: String,
+    title: String = stringResource(com.filmapp.R.string.empty_state_title_default),
     subtitle: String? = null,
     modifier: Modifier = Modifier
 ) {
@@ -89,8 +90,8 @@ fun FilmAppEmptyState(
 
 @Composable
 fun FilmAppErrorState(
-    title: String,
-    message: String,
+    title: String = stringResource(com.filmapp.R.string.error_state_title_default),
+    message: String = stringResource(com.filmapp.R.string.error_state_subtitle_default),
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -112,13 +113,14 @@ fun FilmAppErrorState(
             textAlign = TextAlign.Center
         )
         FilmAppButton(
-            text = "Повторить",
+            text = stringResource(com.filmapp.R.string.retry_button),
             onClick = onRetry,
             modifier = Modifier.padding(horizontal = Spacing.xxl)
         )
     }
 }
 
+//эффект загрузки
 @Composable
 fun Modifier.shimmerEffect(): Modifier {
     val transition = rememberInfiniteTransition(label = "shimmer")

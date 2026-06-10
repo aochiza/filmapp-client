@@ -12,9 +12,6 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 
-/**
- * Subtle scale-down on press for buttons and tappable cards.
- */
 fun Modifier.pressableScale(enabled: Boolean = true): Modifier = composed {
     if (!enabled) return@composed this
 

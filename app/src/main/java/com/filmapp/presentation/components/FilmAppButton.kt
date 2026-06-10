@@ -28,10 +28,10 @@ fun FilmAppButton(
         modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
-            .pressableScale(enabled = enabled && !isLoading),
+            .pressableScale(enabled = enabled && !isLoading), //анимация при нажатии
         shape = ButtonShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.primary,//если активна
             disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
         ),
         elevation = ButtonDefaults.buttonElevation(
@@ -55,6 +55,7 @@ fun FilmAppButton(
 }
 
 @Composable
+//кнока для забыли пароль
 fun FilmAppTextButton(
     text: String,
     onClick: () -> Unit,
