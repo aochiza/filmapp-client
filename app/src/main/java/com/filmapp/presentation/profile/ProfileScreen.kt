@@ -32,12 +32,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.filmapp.R
 import com.filmapp.presentation.components.FilmAppEmptyState
 import com.filmapp.presentation.components.FilmAppErrorState
 import com.filmapp.presentation.components.FilmAppLoading
@@ -65,8 +67,8 @@ fun ProfileScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Выйти из аккаунта?") },
-            text = { Text("Вы уверены, что хотите выйти?") },
+            title = { Text(stringResource(R.string.logout_dialog_title)) },
+            text = { Text(stringResource(R.string.logout_dialog_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -75,14 +77,14 @@ fun ProfileScreen(
                     }
                 ) {
                     Text(
-                        text = "Выйти",
+                        text = stringResource(R.string.logout_button),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Отмена")
+                    Text(stringResource(R.string.logout_cancel_button))
                 }
             },
             containerColor = MaterialTheme.colorScheme.surface,
@@ -93,7 +95,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             FilmAppTopBar(
-                title = "Профиль",
+                title = stringResource(R.string.profile_title),
                 centered = true,
                 actions = {
                     IconButton(
@@ -102,7 +104,7 @@ fun ProfileScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ExitToApp,
-                            contentDescription = "Выйти",
+                            contentDescription = stringResource(R.string.logout_icon_description),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -117,6 +119,7 @@ fun ProfileScreen(
                 .padding(paddingValues),
             contentPadding = PaddingValues(bottom = Spacing.md)
         ) {
+           //профиль
             item {
                 Surface(
                     modifier = Modifier
@@ -134,6 +137,7 @@ fun ProfileScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
+                        //ава
                         Surface(
                             modifier = Modifier
                                 .size(88.dp)
@@ -150,14 +154,16 @@ fun ProfileScreen(
                             }
                         }
 
+                        //имя
                         Text(
-                            text = name ?: "Пользователь",
+                            text = name ?: stringResource(R.string.profile_default_name),
                             style = MaterialTheme.typography.headlineSmall
                         )
                     }
                 }
             }
 
+            //посмотреть позже
             item {
                 Row(
                     modifier = Modifier
@@ -173,7 +179,7 @@ fun ProfileScreen(
                         modifier = Modifier.size(22.dp)
                     )
                     Text(
-                        text = "Посмотреть позже",
+                        text = stringResource(R.string.profile_watch_later_title),
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
@@ -197,9 +203,9 @@ fun ProfileScreen(
                 is WatchLaterState.Empty -> {
                     item {
                         FilmAppEmptyState(
-                            emoji = "😕",
-                            title = "Список пуст",
-                            subtitle = "Добавляйте фильмы, которые хотите посмотреть"
+                            emoji = stringResource(R.string.watch_later_empty_emoji),
+                            title = stringResource(R.string.watch_later_empty_title),
+                            subtitle = stringResource(R.string.watch_later_empty_subtitle)
                         )
                     }
                 }
@@ -207,7 +213,7 @@ fun ProfileScreen(
                 is WatchLaterState.Error -> {
                     item {
                         FilmAppErrorState(
-                            title = "Ошибка",
+                            title = stringResource(R.string.watch_later_error_title),
                             message = s.message,
                             onRetry = { viewModel.loadWatchLater() }
                         )

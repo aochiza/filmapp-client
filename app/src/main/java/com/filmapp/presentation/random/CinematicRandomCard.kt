@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -43,11 +44,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.filmapp.R
 import com.filmapp.domain.model.Film
 import com.filmapp.presentation.components.pressableScale
 import com.filmapp.presentation.theme.AccentGold
@@ -57,6 +60,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 private const val SWIPE_THRESHOLD_FRACTION = 0.22f
+
 
 @Composable
 fun CinematicRandomCard(
@@ -102,7 +106,6 @@ fun CinematicRandomCard(
                                 onSwipeComplete()
                                 offsetX.snapTo(0f)
                             } else {
-                                //анимация возврата
                                 offsetX.animateTo(
                                     targetValue = 0f,
                                     animationSpec = tween(durationMillis = 200)
@@ -129,13 +132,13 @@ fun CinematicRandomCard(
                     alpha = 1f - dragProgress * 0.15f
                 }
         ) {
+            //постер
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.88f)
                     .align(Alignment.TopCenter)
             ) {
-
                 FilmPoster(
                     film = film,
                     modifier = Modifier
@@ -143,6 +146,7 @@ fun CinematicRandomCard(
                         .graphicsLayer { translationX = imageParallax }
                 )
 
+                //градиенты
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -159,7 +163,6 @@ fun CinematicRandomCard(
                             )
                         )
                 )
-
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -176,6 +179,7 @@ fun CinematicRandomCard(
                 )
             }
 
+            //инфо и фильме
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -203,6 +207,7 @@ fun CinematicRandomCard(
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White.copy(alpha = 0.85f)
                     )
+
                     film.genreName?.let { genre ->
                         Surface(
                             shape = CircleShape,
@@ -216,6 +221,7 @@ fun CinematicRandomCard(
                             )
                         }
                     }
+
                     film.rating?.let { rating ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -240,7 +246,8 @@ fun CinematicRandomCard(
 
                 val descriptionText = film.description?.let { desc ->
                     if (desc.length > 160) desc.take(160) + "…" else desc
-                } ?: "Описание отсутствует"
+                } ?: stringResource(R.string.random_no_description)
+
                 Text(
                     text = descriptionText,
                     style = MaterialTheme.typography.bodyMedium,
@@ -251,16 +258,18 @@ fun CinematicRandomCard(
 
                 Spacer(modifier = Modifier.height(Spacing.md))
 
+                //избранное
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Свайп для следующего →",
+                        text = stringResource(R.string.random_swipe_hint),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White.copy(alpha = 0.4f)
                     )
+
                     FilledIconButton(
                         onClick = onFavoriteClick,
                         modifier = Modifier
@@ -281,7 +290,7 @@ fun CinematicRandomCard(
                             } else {
                                 Icons.Default.FavoriteBorder
                             },
-                            contentDescription = "Избранное"
+                            contentDescription = stringResource(R.string.random_favorite_icon)
                         )
                     }
                 }
@@ -298,7 +307,6 @@ fun FilmPoster(
     val context = LocalContext.current
 
     val imageModel = remember(film.id, film.posterUrl) {
-
         val localPosterName = "poster_${film.id}"
         val drawableResId = context.resources.getIdentifier(
             localPosterName,
@@ -307,14 +315,14 @@ fun FilmPoster(
         )
 
         when {
-            //локальный
+            //локльно
             drawableResId != 0 -> {
                 ImageRequest.Builder(context)
                     .data(drawableResId)
                     .crossfade(400)
                     .build()
             }
-            //с сервера
+            //из интернета
             !film.posterUrl.isNullOrEmpty() -> {
                 ImageRequest.Builder(context)
                     .data(film.posterUrl)
@@ -322,7 +330,7 @@ fun FilmPoster(
                     .error(android.R.drawable.ic_menu_gallery)
                     .build()
             }
-            //заглушка
+            //загоушка
             else -> {
                 ImageRequest.Builder(context)
                     .data(android.R.drawable.ic_menu_gallery)

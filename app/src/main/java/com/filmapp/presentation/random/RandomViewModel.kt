@@ -2,6 +2,7 @@ package com.filmapp.presentation.random
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.filmapp.domain.model.Film
 import com.filmapp.domain.model.Genre
 import com.filmapp.domain.usecase.film.AddToFavoritesUseCase
 import com.filmapp.domain.usecase.film.GetRandomFilmUseCase
@@ -13,6 +14,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+
+sealed class RandomState {
+    data object Loading : RandomState()
+    data class Success(val film: Film, val isFavorite: Boolean) : RandomState()
+    data class Error(val message: String) : RandomState()
+}
 
 @HiltViewModel
 class RandomViewModel @Inject constructor(
@@ -35,9 +43,11 @@ class RandomViewModel @Inject constructor(
         loadGenres()
     }
 
-    fun loadGenres() {
+    private fun loadGenres() {
         viewModelScope.launch {
-            getGenresUseCase().onSuccess { _genres.value = it }
+            getGenresUseCase().onSuccess { genres ->
+                _genres.value = genres
+            }
         }
     }
 
@@ -59,10 +69,12 @@ class RandomViewModel @Inject constructor(
                 if (film != null) {
                     _randomState.value = RandomState.Success(film, film.isFavorite)
                 } else {
-                    _randomState.value = RandomState.Error("Фильмы не найдены")
+                    _randomState.value = RandomState.Error(getNoFilmsErrorMessage())
                 }
             } catch (e: Exception) {
-                _randomState.value = RandomState.Error(e.message ?: "Ошибка загрузки")
+                _randomState.value = RandomState.Error(
+                    e.message ?: getDefaultErrorMessage()
+                )
             }
         }
     }
@@ -84,4 +96,8 @@ class RandomViewModel @Inject constructor(
             }
         }
     }
+    
+    private fun getNoFilmsErrorMessage(): String = "Фильмы не найдены"
+    private fun getDefaultErrorMessage(): String = "Ошибка загрузки"
+    // endregion
 }

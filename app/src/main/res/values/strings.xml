@@ -196,5 +196,32 @@
     <string name="error_loading_default">Ошибка загрузки</string>
     <string name="error_delete_default">Ошибка удаления фильма</string>
 
+    <!-- Экран профиля -->
+    <string name="profile_title">Профиль</string>
+    <string name="profile_default_name">Пользователь</string>
+    <string name="profile_watch_later_title">Посмотреть позже</string>
+
+    <!-- Диалог выхода -->
+    <string name="logout_dialog_title">Выйти из аккаунта?</string>
+    <string name="logout_dialog_message">Вы уверены, что хотите выйти?</string>
+    <string name="logout_button">Выйти</string>
+    <string name="logout_cancel_button">Отмена</string>
+    <string name="logout_icon_description">Выйти</string>
+
+    <!-- Состояния списка -->
+    <string name="watch_later_empty_emoji">😕</string>
+    <string name="watch_later_empty_title">Список пуст</string>
+    <string name="watch_later_empty_subtitle">Добавляйте фильмы, которые хотите посмотреть</string>
+    <string name="watch_later_error_title">Ошибка</string>
+
+    <!-- Экран случайного фильма -->
+    <string name="random_no_description">Описание отсутствует</string>
+    <string name="random_swipe_hint">Свайп для следующего →</string>
+    <string name="random_favorite_icon">Избранное</string>
+    <string name="random_error_title">Не удалось загрузить</string>
+    <string name="random_no_films_error">Фильмы не найдены</string>
+    <string name="random_loading_error">Ошибка загрузки</string>
+    <string name="random_category_all">Все</string>
+
 
 </resources>
